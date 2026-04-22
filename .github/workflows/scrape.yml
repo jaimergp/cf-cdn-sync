@@ -7,7 +7,7 @@ on:
 
 jobs:
   scrape_and_commit:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     env:
       URL_TO_SCRAPE: "https://conda.anaconda.org/conda-forge/last-updated.json"
     permissions:
