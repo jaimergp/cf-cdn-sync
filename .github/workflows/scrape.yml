@@ -1,0 +1,30 @@
+name: Scrape JSON Data
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+jobs:
+  scrape_and_commit:
+    runs-on: ubuntu-latest
+    env:
+      URL_TO_SCRAPE: "https://conda.anaconda.org/conda-forge/last-updated.json"
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - run: |
+          curl -s "${URL_TO_SCRAPE}" -o data/conda-forge.json
+      - run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          
+          git add .
+          if git diff --staged --quiet; then
+            echo "No changes detected. Skipping commit."
+          else
+            git commit -m "Automated data update: $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
+            git push
+          fi
